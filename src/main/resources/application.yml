@@ -1,0 +1,42 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: ms-route-ai-agent
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:5432}/${DB_NAME:truckdar_alerts_db}
+    username: ${DB_USER:truckdar_user}
+    password: ${DB_PASSWORD:truckdar_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:127.0.0.1:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max.block.ms: 3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+truckdar:
+  services:
+    restrictions-url: ${RESTRICTIONS_URL:http://localhost:8084}
+    alerts-url: ${ALERTS_URL:http://localhost:8082}
+  kafka:
+    topic:
+      route-decisions: truckdar.events.route-plans
